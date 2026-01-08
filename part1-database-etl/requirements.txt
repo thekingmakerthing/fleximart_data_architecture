@@ -1,5 +1,4 @@
-# Core data and visualization
+# requirements
 pandas>=2.0
 sqlalchemy>=2.0
-mysql-connector-python>=9
-
+mysql-connector-python>=9.0
