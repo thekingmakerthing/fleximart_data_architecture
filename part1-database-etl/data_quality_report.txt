@@ -1,0 +1,5 @@
+FlexiMart Data Quality Report
+=============================
+Customers: Processed 26 | Duplicates Removed 1 | Missing Handled 5 | Loaded 25
+Products:  Processed 20 | Duplicates Removed 0 | Missing Handled 4 | Loaded 20
+Sales:     Processed 41 | Duplicates Removed 1 | Missing Handled 5 | Loaded 35
