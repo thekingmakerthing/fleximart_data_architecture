@@ -1,5 +1,9 @@
+from socket import create_connection
 import pandas as pd
 import re
+import mysql.connector
+from mysql.connector import Error
+import logging
 from sqlalchemy import create_engine
 import os
 
@@ -67,6 +71,72 @@ def parse_date_robust(date_str):
         return pd.to_datetime(date_str).date()
     except:
         return None
+
+def create_schema(cursor):
+    """Creates the database schema based on provided SQL."""
+    print("Creating schema...")
+    
+    # Drop tables in reverse order of dependencies to avoid FK errors
+    tables = ['order_items', 'orders', 'products', 'customers']
+    for table in tables:
+        cursor.execute(f"DROP TABLE IF EXISTS {table}")
+
+    # Schema Definitions
+    schema_queries = [
+        """
+        CREATE TABLE customers (
+            customer_id INT PRIMARY KEY AUTO_INCREMENT,
+            first_name VARCHAR(50) NOT NULL,
+            last_name VARCHAR(50) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            phone VARCHAR(20),
+            city VARCHAR(50),
+            registration_date DATE
+        )
+        """,
+        """
+        CREATE TABLE products (
+            product_id INT PRIMARY KEY AUTO_INCREMENT,
+            product_name VARCHAR(100) NOT NULL,
+            category VARCHAR(50) NOT NULL,
+            price DECIMAL(10,2) NOT NULL,
+            stock_quantity INT DEFAULT 0
+        )
+        """,
+        """
+        CREATE TABLE orders (
+            order_id INT PRIMARY KEY AUTO_INCREMENT,
+            customer_id INT NOT NULL,
+            order_date DATE NOT NULL,
+            total_amount DECIMAL(10,2) NOT NULL,
+            status VARCHAR(20) DEFAULT 'Pending',
+            FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+        )
+        """,
+        """
+        CREATE TABLE order_items (
+            order_item_id INT PRIMARY KEY AUTO_INCREMENT,
+            order_id INT NOT NULL,
+            product_id INT NOT NULL,
+            quantity INT NOT NULL,
+            unit_price DECIMAL(10,2) NOT NULL,
+            subtotal DECIMAL(10,2) NOT NULL,
+            FOREIGN KEY (order_id) REFERENCES orders(order_id),
+            FOREIGN KEY (product_id) REFERENCES products(product_id)
+        )
+        """
+    ]
+
+    for query in schema_queries:
+        try:
+            cursor.execute(query)
+        except Error as e:
+            logging.error(f"Failed to create table: {e}")
+            print(f"Error: {e}")
+    
+    print("Schema created successfully.")
+
+
 
 def run_etl():
     report = []
@@ -152,6 +222,16 @@ def run_etl():
     
     report.append(f"Sales:     Processed {stats_s['processed']} | Duplicates Removed {stats_s['duplicates']} | Missing Handled {stats_s['missing']} | Loaded {len(df_s)}")
 
+
+    conn = create_connection()
+    if conn is None: return
+
+    cursor = conn.cursor()
+    
+    # 1. Setup Schema
+    create_schema(cursor)
+
+    
     # --- 4. Load to DB ---
     if test_db_connection():
         try:
