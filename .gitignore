@@ -1,21 +1,13 @@
+# Mac
+.DS_Store
+
+# VSCode
+.vscode/
+
 # Python
 __pycache__/
 *.pyc
+
+# Virtual Environment
+venv/
 .env
-venv2/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Database
-*.db
-*.log
-
-# Large files
-*.zip
-
