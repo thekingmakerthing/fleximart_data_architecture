@@ -11,7 +11,7 @@
 This project implements a comprehensive data architecture solution for FlexiMart, an e-commerce company. The solution includes a complete ETL pipeline for ingesting raw CSV data into a relational database, NoSQL analysis for handling diverse product catalogs, and a data warehouse with star schema design for analytical reporting. The system addresses data quality issues, implements both relational and NoSQL database solutions, and provides OLAP capabilities for business intelligence.
 
 ## Repository Structure
-'''
+```bash
 ├── part1-database-etl/
 │   ├── etl_pipeline.py
 │   ├── schema_documentation.md
@@ -27,7 +27,7 @@ This project implements a comprehensive data architecture solution for FlexiMart
 │   ├── warehouse_data.sql
 │   └── analytics_queries.sql
 └── README.md
-'''
+```
 
 ## Technologies Used
 
